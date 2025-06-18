@@ -3,85 +3,112 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Ask Mistral</title>
+  <title>AGNI - Hugging Face AI</title>
   <style>
     body {
-      font-family: Arial, sans-serif;
-      background-color: #f4f4f4;
-      padding: 20px;
-      max-width: 600px;
-      margin: auto;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(to right, #1f4037, #99f2c8);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
     }
 
-    h1 {
-      color: #333;
+    .container {
+      background-color: white;
+      padding: 30px;
+      border-radius: 15px;
+      box-shadow: 0 8px 16px rgba(0,0,0,0.25);
+      max-width: 500px;
+      width: 100%;
+    }
+
+    h2 {
+      margin-top: 0;
+      color: #1f4037;
+      text-align: center;
     }
 
     textarea {
       width: 100%;
       height: 120px;
-      padding: 10px;
+      padding: 12px;
       font-size: 16px;
-      margin-bottom: 10px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      resize: vertical;
+      margin-top: 10px;
     }
 
     button {
-      padding: 10px 20px;
-      font-size: 16px;
-      background-color: #007bff;
+      margin-top: 15px;
+      width: 100%;
+      padding: 12px;
+      background-color: #1f4037;
       color: white;
       border: none;
+      border-radius: 8px;
+      font-size: 16px;
       cursor: pointer;
+      transition: background-color 0.3s ease;
     }
 
     button:hover {
-      background-color: #0056b3;
+      background-color: #145c48;
     }
 
     .response {
       margin-top: 20px;
       padding: 15px;
-      background-color: #fff;
-      border-left: 4px solid #007bff;
-      border-radius: 5px;
+      background-color: #f1f1f1;
+      border-radius: 10px;
+      min-height: 50px;
+      white-space: pre-wrap;
     }
   </style>
 </head>
 <body>
-  <h1>Ask Mistral</h1>
-
-  <textarea id="prompt" placeholder="Type your question..."></textarea>
-  <br />
-  <button onclick="sendPrompt()">Send</button>
-
-  <div id="response" class="response" style="display: none;"></div>
+  <div class="container">
+    <h2>AGNI AI Assistant</h2>
+    <textarea id="inputText" placeholder="Type your question or command..."></textarea>
+    <button onclick="askAI()">Ask AGNI</button>
+    <div id="responseBox" class="response"></div>
+  </div>
 
   <script>
-    async function sendPrompt() {
-      const prompt = document.getElementById('prompt').value;
-      const responseDiv = document.getElementById('response');
-      responseDiv.style.display = 'block';
-      responseDiv.innerHTML = 'Thinking...';
+    async function askAI() {
+      const prompt = document.getElementById("inputText").value.trim();
+      const responseBox = document.getElementById("responseBox");
+
+      if (!prompt) {
+        responseBox.innerText = "⚠️ Please enter a prompt.";
+        return;
+      }
+
+      responseBox.innerText = "⏳ Thinking...";
 
       try {
-        const res = await fetch('https://mistral-backend-ydd5.onrender.com/ask', {
-          method: 'POST',
+        const res = await fetch("https://api-inference.huggingface.co/models/google/flan-t5-small", {
+          method: "POST",
           headers: {
-            'Content-Type': 'application/json'
+            "Authorization": "Bearer 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",
+            "Content-Type": "application/json"
           },
-          body: JSON.stringify({ prompt })
+          body: JSON.stringify({ inputs: prompt })
         });
 
         const data = await res.json();
-        if (data.answer) {
-          responseDiv.innerHTML = `<strong>Answer:</strong><br>${data.answer}`;
+
+        if (data && data[0] && data[0].generated_text) {
+          responseBox.innerText = "✅ Answer:\n" + data[0].generated_text;
         } else {
-          responseDiv.innerHTML = `<strong>Error:</strong> ${data.error || 'Unknown error'}`;
+          responseBox.innerText = "❌ Error:\n" + JSON.stringify(data);
         }
-      } catch (error) {
-        responseDiv.innerHTML = `<strong>Error:</strong> ${error.message}`;
+      } catch (err) {
+        responseBox.innerText = "⚠️ Request failed: " + err.message;
       }
     }
   </script>
 </body>
-                                                              </html>
+</html>
