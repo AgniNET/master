@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Ask Mistral</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f4;
+      padding: 20px;
+      max-width: 600px;
+      margin: auto;
+    }
+
+    h1 {
+      color: #333;
+    }
+
+    textarea {
+      width: 100%;
+      height: 120px;
+      padding: 10px;
+      font-size: 16px;
+      margin-bottom: 10px;
+    }
+
+    button {
+      padding: 10px 20px;
+      font-size: 16px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background-color: #0056b3;
+    }
+
+    .response {
+      margin-top: 20px;
+      padding: 15px;
+      background-color: #fff;
+      border-left: 4px solid #007bff;
+      border-radius: 5px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Ask Mistral</h1>
+
+  <textarea id="prompt" placeholder="Type your question..."></textarea>
+  <br />
+  <button onclick="sendPrompt()">Send</button>
+
+  <div id="response" class="response" style="display: none;"></div>
+
+  <script>
+    async function sendPrompt() {
+      const prompt = document.getElementById('prompt').value;
+      const responseDiv = document.getElementById('response');
+      responseDiv.style.display = 'block';
+      responseDiv.innerHTML = 'Thinking...';
+
+      try {
+        const res = await fetch('https://mistral-backend-ydd5.onrender.com/ask', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ prompt })
+        });
+
+        const data = await res.json();
+        if (data.answer) {
+          responseDiv.innerHTML = `<strong>Answer:</strong><br>${data.answer}`;
+        } else {
+          responseDiv.innerHTML = `<strong>Error:</strong> ${data.error || 'Unknown error'}`;
+        }
+      } catch (error) {
+        responseDiv.innerHTML = `<strong>Error:</strong> ${error.message}`;
+      }
+    }
+  </script>
+</body>
+                                                              </html>
