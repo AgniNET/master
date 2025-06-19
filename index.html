@@ -6,71 +6,72 @@
   <title>SambaNova API Test</title>
   <style>
     body {
-      font-family: Arial, sans-serif;
+      font-family: sans-serif;
+      background: #f3f3f3;
       padding: 40px;
-      background: #f4f4f4;
+      max-width: 700px;
+      margin: auto;
     }
-
-    textarea, button {
+    textarea {
       width: 100%;
+      height: 120px;
       font-size: 16px;
       padding: 12px;
-      margin: 10px 0;
+      margin-bottom: 16px;
+      border-radius: 6px;
     }
-
     button {
-      background-color: #875A7B;
+      background: #875A7B;
       color: white;
+      padding: 12px 24px;
+      font-size: 16px;
       border: none;
       border-radius: 6px;
       cursor: pointer;
+      transition: all 0.2s ease;
     }
-
     button:hover {
-      background-color: #a26e98;
+      background: #a26e98;
+      transform: translateY(-2px);
     }
-
     pre {
       background: #222;
       color: #0f0;
       padding: 20px;
-      border-radius: 8px;
+      border-radius: 6px;
       white-space: pre-wrap;
+      margin-top: 20px;
     }
   </style>
 </head>
 <body>
 
-  <h2>🚀 SambaNova AI Test Client</h2>
-
-  <textarea id="prompt" placeholder="Write your prompt here..."></textarea>
-  <button onclick="sendPrompt()">Send Prompt</button>
-
-  <h3>🧠 Response:</h3>
-  <pre id="response">// Response will appear here</pre>
+  <h2>Test SambaNova API</h2>
+  <textarea id="prompt" placeholder="Write prompt here..."></textarea>
+  <button onclick="runPrompt()">Run</button>
+  <pre id="response">// response will appear here</pre>
 
   <script>
-    async function sendPrompt() {
-      const prompt = document.getElementById('prompt').value;
-      const responseBox = document.getElementById('response');
+    async function runPrompt() {
+      const prompt = document.getElementById("prompt").value.trim();
+      const box = document.getElementById("response");
+      if (!prompt) return box.textContent = "// enter prompt first";
 
-      responseBox.textContent = '⏳ Waiting for response...';
+      box.textContent = "// sending request...";
 
       try {
-        const res = await fetch('https://api.sambanova.ai/v1/chat', {
-          method: 'POST',
+        const res = await fetch("https://api.sambanova.ai/v1/chat", {
+          method: "POST",
           headers: {
-            'Content-Type': 'application/json',
-            // ⚠️ Paste your API key below. Remove this after testing!
-            'Authorization': 483561af-2a39-4412-b157-c5c2148fc44b
+            "Content-Type": "application/json",
+            "Authorization": "Bearer 483561af-2a39-4412-b157-c5c2148fc44b"
           },
           body: JSON.stringify({ prompt })
         });
-
         const data = await res.json();
-        responseBox.textContent = JSON.stringify(data, null, 2);
-      } catch (err) {
-        responseBox.textContent = '❌ Error:\n' + err.message;
+        box.textContent = data.answer || JSON.stringify(data, null, 2);
+      } catch (e) {
+        box.textContent = "// error: " + e.message;
       }
     }
   </script>
