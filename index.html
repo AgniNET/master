@@ -3,112 +3,77 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>AGNI - Hugging Face AI</title>
+  <title>SambaNova API Test</title>
   <style>
     body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: linear-gradient(to right, #1f4037, #99f2c8);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      margin: 0;
+      font-family: Arial, sans-serif;
+      padding: 40px;
+      background: #f4f4f4;
     }
 
-    .container {
-      background-color: white;
-      padding: 30px;
-      border-radius: 15px;
-      box-shadow: 0 8px 16px rgba(0,0,0,0.25);
-      max-width: 500px;
+    textarea, button {
       width: 100%;
-    }
-
-    h2 {
-      margin-top: 0;
-      color: #1f4037;
-      text-align: center;
-    }
-
-    textarea {
-      width: 100%;
-      height: 120px;
-      padding: 12px;
       font-size: 16px;
-      border-radius: 8px;
-      border: 1px solid #ccc;
-      resize: vertical;
-      margin-top: 10px;
+      padding: 12px;
+      margin: 10px 0;
     }
 
     button {
-      margin-top: 15px;
-      width: 100%;
-      padding: 12px;
-      background-color: #1f4037;
+      background-color: #875A7B;
       color: white;
       border: none;
-      border-radius: 8px;
-      font-size: 16px;
+      border-radius: 6px;
       cursor: pointer;
-      transition: background-color 0.3s ease;
     }
 
     button:hover {
-      background-color: #145c48;
+      background-color: #a26e98;
     }
 
-    .response {
-      margin-top: 20px;
-      padding: 15px;
-      background-color: #f1f1f1;
-      border-radius: 10px;
-      min-height: 50px;
+    pre {
+      background: #222;
+      color: #0f0;
+      padding: 20px;
+      border-radius: 8px;
       white-space: pre-wrap;
     }
   </style>
 </head>
 <body>
-  <div class="container">
-    <h2>AGNI AI Assistant</h2>
-    <textarea id="inputText" placeholder="Type your question or command..."></textarea>
-    <button onclick="askAI()">Ask AGNI</button>
-    <div id="responseBox" class="response"></div>
-  </div>
+
+  <h2>🚀 SambaNova AI Test Client</h2>
+
+  <textarea id="prompt" placeholder="Write your prompt here..."></textarea>
+  <button onclick="sendPrompt()">Send Prompt</button>
+
+  <h3>🧠 Response:</h3>
+  <pre id="response">// Response will appear here</pre>
 
   <script>
-    async function askAI() {
-      const prompt = document.getElementById("inputText").value.trim();
-      const responseBox = document.getElementById("responseBox");
+    async function sendPrompt() {
+      const prompt = document.getElementById('prompt').value;
+      const responseBox = document.getElementById('response');
 
-      if (!prompt) {
-        responseBox.innerText = "⚠️ Please enter a prompt.";
-        return;
-      }
-
-      responseBox.innerText = "⏳ Thinking...";
+      responseBox.textContent = '⏳ Waiting for response...';
 
       try {
-        const res = await fetch("https://api-inference.huggingface.co/models/google/flan-t5-small", {
-          method: "POST",
+        const res = await fetch('https://api.sambanova.ai/v1/chat', {
+          method: 'POST',
           headers: {
-            "Authorization": "Bearer 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",
-            "Content-Type": "application/json"
+            'Content-Type': 'application/json',
+            // ⚠️ Paste your API key below. Remove this after testing!
+            'Authorization': 483561af-2a39-4412-b157-c5c2148fc44b
           },
-          body: JSON.stringify({ inputs: prompt })
+          body: JSON.stringify({ prompt })
         });
 
         const data = await res.json();
-
-        if (data && data[0] && data[0].generated_text) {
-          responseBox.innerText = "✅ Answer:\n" + data[0].generated_text;
-        } else {
-          responseBox.innerText = "❌ Error:\n" + JSON.stringify(data);
-        }
+        responseBox.textContent = JSON.stringify(data, null, 2);
       } catch (err) {
-        responseBox.innerText = "⚠️ Request failed: " + err.message;
+        responseBox.textContent = '❌ Error:\n' + err.message;
       }
     }
   </script>
+
 </body>
 </html>
